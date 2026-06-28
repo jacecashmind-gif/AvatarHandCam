@@ -2,7 +2,35 @@ import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { VRMLoaderPlugin, VRMUtils } from "@pixiv/three-vrm";
-import { input } from "./js/input.js";
+const input = {
+    keys: {},
+    mouse: {
+        x: 0,
+        y: 0,
+        left: false,
+        right: false
+    }
+};
+
+window.addEventListener("keydown", (e) => input.keys[e.code] = true);
+window.addEventListener("keyup", (e) => input.keys[e.code] = false);
+
+window.addEventListener("mousedown", (e) => {
+    if (e.button === 0) input.mouse.left = true;
+    if (e.button === 2) input.mouse.right = true;
+});
+
+window.addEventListener("mouseup", (e) => {
+    if (e.button === 0) input.mouse.left = false;
+    if (e.button === 2) input.mouse.right = false;
+});
+
+window.addEventListener("mousemove", (e) => {
+    input.mouse.x = e.clientX;
+    input.mouse.y = e.clientY;
+});
+
+window.addEventListener("contextmenu", (e) => e.preventDefault());
 
 const canvas = document.getElementById("scene");
 const loading = document.getElementById("loading");
