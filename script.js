@@ -132,59 +132,46 @@ loader.load(
     }
 );
 
+// ===== Animation Loop =====
+
 const clock = new THREE.Clock();
 
 function animate() {
-
     requestAnimationFrame(animate);
 
-    controls.update();
+    const delta = clock.getDelta();
 
-    if (vrm) {
+    if (currentVrm) {
 
-        vrm.update(clock.getDelta());
+        currentVrm.update(delta);
 
-        const leftHand = vrm.humanoid.getNormalizedBoneNode("leftHand");
-        const rightHand = vrm.humanoid.getNormalizedBoneNode("rightHand");
+        // Head follows mouse
+        const head = currentVrm.humanoid.getNormalizedBoneNode("head");
 
-        if (leftHand) {
+        if (head) {
 
-            leftHand.rotation.x +=
-                (((input.keys["KeyW"] ? -0.18 : 0)) - leftHand.rotation.x) * 0.15;
+            const x = (input.mouse.x / window.innerWidth) * 2 - 1;
+            const y = (input.mouse.y / window.innerHeight) * 2 - 1;
 
-            leftHand.rotation.z +=
-                (((input.keys["KeyA"] ? 0.15 : 0)) - leftHand.rotation.z) * 0.15;
+            head.rotation.y = THREE.MathUtils.lerp(
+                head.rotation.y,
+                -x * 0.5,
+                0.12
+            );
 
+            head.rotation.x = THREE.MathUtils.lerp(
+                head.rotation.x,
+                y * 0.35,
+                0.12
+            );
         }
-
-        if (rightHand) {
-
-            rightHand.rotation.x +=
-                (((input.mouse.left ? -0.15 : 0)) - rightHand.rotation.x) * 0.2;
-
-        }
-
     }
 
-    keyboard.material.emissive.setHex(
-        input.keys["KeyW"] ||
-        input.keys["KeyA"] ||
-        input.keys["KeyS"] ||
-        input.keys["KeyD"]
-            ? 0x0088ff
-            : 0x000000
-    );
-
-    mouse.material.emissive.setHex(
-        input.mouse.left ? 0x0088ff : 0x000000
-    );
-
+    controls.update();
     renderer.render(scene, camera);
-
 }
 
 animate();
-
 window.addEventListener("resize", () => {
 
     camera.aspect = window.innerWidth / window.innerHeight;
