@@ -1,7 +1,7 @@
 import * as THREE from "three";
 import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
-import { VRMLoaderPlugin, VRMUtils } from "@pixiv/three-vrm";
+import { VRMLoaderPlugin, VRMUtils, VRMHumanBoneName } from "@pixiv/three-vrm";
 
 const canvas = document.getElementById("scene");
 
@@ -17,99 +17,126 @@ renderer.setSize(window.innerWidth, window.innerHeight);
 const scene = new THREE.Scene();
 
 const camera = new THREE.PerspectiveCamera(
-    35,
-    window.innerWidth / window.innerHeight,
-    0.1,
-    100
+35,
+window.innerWidth/window.innerHeight,
+0.1,
+100
 );
 
-camera.position.set(0, 1.4, 2.2);
+camera.position.set(0,1.35,2.2);
 
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.target.set(0, 1.3, 0);
-controls.update();
+const controls=new OrbitControls(camera,renderer.domElement);
+controls.target.set(0,1.25,0);
+controls.enableDamping=true;
 
-scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 2));
+scene.add(new THREE.HemisphereLight(0xffffff,0x444444,2));
 
-const directionalLight = new THREE.DirectionalLight(0xffffff, 3);
-directionalLight.position.set(1, 3, 2);
-scene.add(directionalLight);
+const sun=new THREE.DirectionalLight(0xffffff,3);
+sun.position.set(1,3,2);
+scene.add(sun);
 
-let currentVRM = null;
+const desk=new THREE.Mesh(
 
-const loader = new GLTFLoader();
+new THREE.BoxGeometry(3,0.08,1.2),
 
-loader.register((parser) => {
-    return new VRMLoaderPlugin(parser);
+new THREE.MeshStandardMaterial({
+
+color:0x202020
+
+})
+
+);
+
+desk.position.set(0,.72,.15);
+
+scene.add(desk);
+
+let vrm;
+
+const loader=new GLTFLoader();
+
+loader.register(parser=>new VRMLoaderPlugin(parser));
+
+loader.load("./assets/model.vrm",(gltf)=>{
+
+vrm=gltf.userData.vrm;
+
+VRMUtils.rotateVRM0(vrm);
+
+scene.add(vrm.scene);
+
+vrm.scene.rotation.y=Math.PI;
+
+vrm.scene.position.y=-0.02;
+
+document.getElementById("loading").style.display="none";
+
 });
 
-loader.load(
-    "./assets/model.vrm",
+const keyboard=new THREE.Mesh(
 
-    (gltf) => {
+new THREE.BoxGeometry(.9,.04,.3),
 
-        const vrm = gltf.userData.vrm;
+new THREE.MeshStandardMaterial({
 
-        currentVRM = vrm;
+color:0x111111,
 
-        VRMUtils.rotateVRM0(vrm);
+metalness:.7,
 
-        scene.add(vrm.scene);
+roughness:.25
 
-        console.log("VRM Loaded!");
-
-        document.getElementById("loading").style.display = "none";
-    },
-
-    (progress) => {
-
-        if (progress.total > 0) {
-
-            const percent = Math.round(progress.loaded / progress.total * 100);
-
-            document.getElementById("loading").textContent =
-                "Loading Avatar... " + percent + "%";
-        }
-
-    },
-
-    (error) => {
-
-        console.error(error);
-
-        document.getElementById("loading").textContent =
-            "Failed to load model.vrm";
-
-    }
+})
 
 );
 
-const clock = new THREE.Clock();
+keyboard.position.set(0,.78,0);
 
-function animate() {
+scene.add(keyboard);
 
-    requestAnimationFrame(animate);
+const mouse=new THREE.Mesh(
 
-    const delta = clock.getDelta();
+new THREE.BoxGeometry(.11,.04,.17),
 
-    if (currentVRM) {
+new THREE.MeshStandardMaterial({
 
-        currentVRM.update(delta);
+color:0x181818
 
-    }
+})
 
-    renderer.render(scene, camera);
+);
+
+mouse.position.set(.63,.78,.05);
+
+scene.add(mouse);
+
+const clock=new THREE.Clock();
+
+function animate(){
+
+requestAnimationFrame(animate);
+
+controls.update();
+
+const delta=clock.getDelta();
+
+if(vrm){
+
+vrm.update(delta);
+
+}
+
+renderer.render(scene,camera);
 
 }
 
 animate();
 
-window.addEventListener("resize", () => {
+window.addEventListener("resize",()=>{
 
-    camera.aspect = window.innerWidth / window.innerHeight;
+camera.aspect=window.innerWidth/window.innerHeight;
 
-    camera.updateProjectionMatrix();
+camera.updateProjectionMatrix();
 
-    renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setSize(window.innerWidth,window.innerHeight);
 
 });
