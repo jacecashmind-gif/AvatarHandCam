@@ -152,17 +152,17 @@ function animate() {
             const x = (input.mouse.x / window.innerWidth) * 2 - 1;
             const y = (input.mouse.y / window.innerHeight) * 2 - 1;
 
-            head.rotation.y = THREE.MathUtils.lerp(
-                head.rotation.y,
-                -x * 0.5,
-                0.12
-            );
+           head.rotation.y = THREE.MathUtils.lerp(
+    head.rotation.y,
+    x * 0.5,
+    0.12
+);
 
-            head.rotation.x = THREE.MathUtils.lerp(
-                head.rotation.x,
-                y * 0.35,
-                0.12
-            );
+head.rotation.x = THREE.MathUtils.lerp(
+    head.rotation.x,
+    -y * 0.35,
+    0.12
+);
         }
     }
 
