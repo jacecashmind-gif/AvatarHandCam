@@ -53,11 +53,10 @@ const camera = new THREE.PerspectiveCamera(
     100
 );
 
-camera.position.set(0, 1.4, 2.2);
-
+camera.position.set(0, 1.18, 1.55);   
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
-controls.target.set(0, 1.3, 0);
+controls.target.set(0, 1.05, 0); controls.enableRotate = false; controls.enableZoom = false; controls.enablePan = false;
 
 scene.add(new THREE.HemisphereLight(0xffffff, 0x444444, 2));
 
@@ -111,8 +110,13 @@ loader.load(
 
         VRMUtils.rotateVRM0(vrm);
 
-        vrm.scene.rotation.y = Math.PI;
+vrm.scene.rotation.y = Math.PI;
 
+// Position
+vrm.scene.position.set(0, -0.72, -0.15);
+
+// Scale
+vrm.scene.scale.set(1.05, 1.05, 1.05);
         scene.add(vrm.scene);
 
         loading.style.display = "none";
