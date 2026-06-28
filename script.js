@@ -168,7 +168,45 @@ head.rotation.x = THREE.MathUtils.lerp(
 
     controls.update();
     renderer.render(scene, camera);
+const leftUpperArm = vrm.humanoid.getNormalizedBoneNode("leftUpperArm");
+const rightUpperArm = vrm.humanoid.getNormalizedBoneNode("rightUpperArm");
+
+const leftLowerArm = vrm.humanoid.getNormalizedBoneNode("leftLowerArm");
+const rightLowerArm = vrm.humanoid.getNormalizedBoneNode("rightLowerArm");
+
+const leftHand = vrm.humanoid.getNormalizedBoneNode("leftHand");
+const rightHand = vrm.humanoid.getNormalizedBoneNode("rightHand");
+
+const x = (input.mouse.x / window.innerWidth) * 2 - 1;
+const y = (input.mouse.y / window.innerHeight) * 2 - 1;if (rightUpperArm) {
+    rightUpperArm.rotation.x = THREE.MathUtils.lerp(
+        rightUpperArm.rotation.x,
+        y * 0.8,
+        0.15
+    );
+
+    rightUpperArm.rotation.z = THREE.MathUtils.lerp(
+        rightUpperArm.rotation.z,
+        -x * 0.8,
+        0.15
+    );
 }
+
+if (rightLowerArm) {
+    rightLowerArm.rotation.x = THREE.MathUtils.lerp(
+        rightLowerArm.rotation.x,
+        y * 0.5,
+        0.15
+    );
+}
+
+if (rightHand) {
+    rightHand.rotation.z = THREE.MathUtils.lerp(
+        rightHand.rotation.z,
+        -x * 0.5,
+        0.15
+    );
+}}
 
 animate();
 window.addEventListener("resize", () => {
