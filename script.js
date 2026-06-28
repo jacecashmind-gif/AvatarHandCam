@@ -11,7 +11,7 @@ const input = {
         right: false
     }
 };
-
+let vrm = null;
 window.addEventListener("keydown", (e) => input.keys[e.code] = true);
 window.addEventListener("keyup", (e) => input.keys[e.code] = false);
 
@@ -141,12 +141,12 @@ function animate() {
 
     const delta = clock.getDelta();
 
-    if (currentVrm) {
+    if (vrm) {
 
-        currentVrm.update(delta);
+        vrm.update(delta);
 
         // Head follows mouse
-        const head = currentVrm.humanoid.getNormalizedBoneNode("head");
+        const head = vrm.humanoid.getNormalizedBoneNode("head");
 
         if (head) {
 
