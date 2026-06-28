@@ -114,7 +114,7 @@ loader.load(
         vrm.scene.rotation.y = Math.PI;
 
         // Position & Scale
-        vrm.scene.position.set(0, -0.15, 0);
+        vrm.scene.position.set(0, 0.35, -0.25);
         vrm.scene.scale.set(1.05, 1.05, 1.05);
 
         scene.add(vrm.scene);
