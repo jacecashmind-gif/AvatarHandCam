@@ -1,17 +1,106 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AvatarHandCam</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="style.css">
+<title>AvatarHandCam</title>
+
+<style>
+html,body{
+margin:0;
+overflow:hidden;
+background:#101114;
+}
+
+canvas{
+display:block;
+}
+</style>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/",
+    "@pixiv/three-vrm": "https://cdn.jsdelivr.net/npm/@pixiv/three-vrm@3/lib/three-vrm.module.min.js"
+  }
+}
+</script>
+
 </head>
+
 <body>
 
-<h1>🚀 AvatarHandCam is Working!</h1>
+<script type="module">
 
-<script src="script.js"></script>
+import * as THREE from "three";
+
+const scene = new THREE.Scene();
+
+const camera = new THREE.PerspectiveCamera(
+45,
+window.innerWidth/window.innerHeight,
+0.1,
+100
+);
+
+camera.position.set(0,1.4,3);
+
+const renderer = new THREE.WebGLRenderer({
+antialias:true,
+alpha:true
+});
+
+renderer.setSize(window.innerWidth,window.innerHeight);
+
+document.body.appendChild(renderer.domElement);
+
+const light = new THREE.DirectionalLight(0xffffff,3);
+
+light.position.set(2,5,3);
+
+scene.add(light);
+
+scene.add(new THREE.AmbientLight(0xffffff,2));
+
+const cube = new THREE.Mesh(
+
+new THREE.BoxGeometry(),
+
+new THREE.MeshStandardMaterial({
+
+color:0x00aaff
+
+})
+
+);
+
+scene.add(cube);
+
+function animate(){
+
+requestAnimationFrame(animate);
+
+cube.rotation.y+=0.01;
+
+renderer.render(scene,camera);
+
+}
+
+animate();
+
+window.addEventListener("resize",()=>{
+
+camera.aspect=window.innerWidth/window.innerHeight;
+
+camera.updateProjectionMatrix();
+
+renderer.setSize(window.innerWidth,window.innerHeight);
+
+});
+
+</script>
 
 </body>
 </html>
