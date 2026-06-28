@@ -106,21 +106,58 @@ loader.register((parser) => new VRMLoaderPlugin(parser));
 loader.load(
     "./assets/model.vrm",
     (gltf) => {
+
         vrm = gltf.userData.vrm;
 
         VRMUtils.rotateVRM0(vrm);
 
-vrm.scene.rotation.y = Math.PI;
+        vrm.scene.rotation.y = Math.PI;
 
-// Position
-vrm.scene.position.set(0, -0.72, -0.15);
+        // Position & Scale
+        vrm.scene.position.set(0, -0.15, 0);
+        vrm.scene.scale.set(1.05, 1.05, 1.05);
 
-// Scale
-vrm.scene.scale.set(1.05, 1.05, 1.05);
         scene.add(vrm.scene);
+
+        // ===== Default Desk Pose =====
+
+        const rightUpperArm = vrm.humanoid.getNormalizedBoneNode("rightUpperArm");
+        const rightLowerArm = vrm.humanoid.getNormalizedBoneNode("rightLowerArm");
+        const rightHand = vrm.humanoid.getNormalizedBoneNode("rightHand");
+
+        const leftUpperArm = vrm.humanoid.getNormalizedBoneNode("leftUpperArm");
+        const leftLowerArm = vrm.humanoid.getNormalizedBoneNode("leftLowerArm");
+        const leftHand = vrm.humanoid.getNormalizedBoneNode("leftHand");
+
+        if (rightUpperArm) {
+            rightUpperArm.rotation.z = -0.8;
+            rightUpperArm.rotation.x = -0.35;
+        }
+
+        if (rightLowerArm) {
+            rightLowerArm.rotation.x = -1.25;
+        }
+
+        if (rightHand) {
+            rightHand.rotation.x = -0.25;
+        }
+
+        if (leftUpperArm) {
+            leftUpperArm.rotation.z = 0.8;
+            leftUpperArm.rotation.x = -0.35;
+        }
+
+        if (leftLowerArm) {
+            leftLowerArm.rotation.x = -1.25;
+        }
+
+        if (leftHand) {
+            leftHand.rotation.x = -0.25;
+        }
 
         loading.style.display = "none";
     },
+
     (progress) => {
         if (progress.total) {
             loading.innerText =
@@ -129,6 +166,7 @@ vrm.scene.scale.set(1.05, 1.05, 1.05);
                 "%";
         }
     },
+
     (err) => {
         console.error(err);
         loading.innerText = "Failed to load avatar";
@@ -140,6 +178,7 @@ vrm.scene.scale.set(1.05, 1.05, 1.05);
 const clock = new THREE.Clock();
 
 function animate() {
+
     requestAnimationFrame(animate);
 
     const delta = clock.getDelta();
@@ -148,69 +187,73 @@ function animate() {
 
         vrm.update(delta);
 
-        // Head follows mouse
+        const x = (input.mouse.x / window.innerWidth) * 2 - 1;
+        const y = (input.mouse.y / window.innerHeight) * 2 - 1;
+
+        // ===== Head =====
+
         const head = vrm.humanoid.getNormalizedBoneNode("head");
 
         if (head) {
 
-            const x = (input.mouse.x / window.innerWidth) * 2 - 1;
-            const y = (input.mouse.y / window.innerHeight) * 2 - 1;
+            head.rotation.y = THREE.MathUtils.lerp(
+                head.rotation.y,
+                x * 0.5,
+                0.12
+            );
 
-           head.rotation.y = THREE.MathUtils.lerp(
-    head.rotation.y,
-    x * 0.5,
-    0.12
-);
-
-head.rotation.x = THREE.MathUtils.lerp(
-    head.rotation.x,
-    -y * 0.35,
-    0.12
-);
+            head.rotation.x = THREE.MathUtils.lerp(
+                head.rotation.x,
+                -y * 0.35,
+                0.12
+            );
         }
+
+        // ===== Right Arm =====
+
+        const rightUpperArm = vrm.humanoid.getNormalizedBoneNode("rightUpperArm");
+        const rightLowerArm = vrm.humanoid.getNormalizedBoneNode("rightLowerArm");
+        const rightHand = vrm.humanoid.getNormalizedBoneNode("rightHand");
+
+        if (rightUpperArm) {
+
+            rightUpperArm.rotation.x = THREE.MathUtils.lerp(
+                rightUpperArm.rotation.x,
+                -0.35 + (y * 0.15),
+                0.15
+            );
+
+            rightUpperArm.rotation.z = THREE.MathUtils.lerp(
+                rightUpperArm.rotation.z,
+                -0.8 + (-x * 0.15),
+                0.15
+            );
+        }
+
+        if (rightLowerArm) {
+
+            rightLowerArm.rotation.x = THREE.MathUtils.lerp(
+                rightLowerArm.rotation.x,
+                -1.25 + (y * 0.12),
+                0.15
+            );
+        }
+
+        if (rightHand) {
+
+            rightHand.rotation.z = THREE.MathUtils.lerp(
+                rightHand.rotation.z,
+                -x * 0.35,
+                0.15
+            );
+        }
+
     }
 
     controls.update();
     renderer.render(scene, camera);
-const leftUpperArm = vrm.humanoid.getNormalizedBoneNode("leftUpperArm");
-const rightUpperArm = vrm.humanoid.getNormalizedBoneNode("rightUpperArm");
 
-const leftLowerArm = vrm.humanoid.getNormalizedBoneNode("leftLowerArm");
-const rightLowerArm = vrm.humanoid.getNormalizedBoneNode("rightLowerArm");
-
-const leftHand = vrm.humanoid.getNormalizedBoneNode("leftHand");
-const rightHand = vrm.humanoid.getNormalizedBoneNode("rightHand");
-
-const x = (input.mouse.x / window.innerWidth) * 2 - 1;
-const y = (input.mouse.y / window.innerHeight) * 2 - 1;if (rightUpperArm) {
-    rightUpperArm.rotation.x = THREE.MathUtils.lerp(
-        rightUpperArm.rotation.x,
-        y * 0.8,
-        0.15
-    );
-
-    rightUpperArm.rotation.z = THREE.MathUtils.lerp(
-        rightUpperArm.rotation.z,
-        -x * 0.8,
-        0.15
-    );
 }
-
-if (rightLowerArm) {
-    rightLowerArm.rotation.x = THREE.MathUtils.lerp(
-        rightLowerArm.rotation.x,
-        y * 0.5,
-        0.15
-    );
-}
-
-if (rightHand) {
-    rightHand.rotation.z = THREE.MathUtils.lerp(
-        rightHand.rotation.z,
-        -x * 0.5,
-        0.15
-    );
-}}
 
 animate();
 window.addEventListener("resize", () => {
