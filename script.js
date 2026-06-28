@@ -99,7 +99,6 @@ mouse.position.set(0.67, 0.78, 0.04);
 
 scene.add(mouse);
 
-let vrm = null;
 
 const loader = new GLTFLoader();
 
